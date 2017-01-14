@@ -1,0 +1,29 @@
+extends layout.pug
+
+block content
+    ul.nav.nav-tabs
+        li(class=!path ? "active" : '')
+            a(href="/activities/list") All
+        li(class=path === 'running' ? "active" : '')
+            a(href="/activities/list/running") Running
+        li(class=path === 'core' ? "active" : '')
+            a(href="/activities/list/core") Core
+        li(class=path === 'swimming' ? "active" : '')
+            a(href="/activities/list/swimming") Swimming
+        li(class=path === 'weights' ? "active" : '')
+            a(href="/activities/list/weights") Weights
+    ul.list-unstyled.activities
+        each item in activities
+            li.row
+                span.col-md-3= moment(item.date).format("dddd, MMMM Do, h:mm a")
+                span.col-md-1= item.activity
+                span.col-md-2 #{item.time_duration} minutes
+                span.col-md-2 #{item.distance} #{item.distance_units}
+                span.col-md-1
+                    a.edit(href='/activities/edit/' + item.id title='Edit')
+                        span.glyphicon.glyphicon-pencil
+                    a.delete(href='/activities/delete/' + item.id title='Delete')
+                        span.glyphicon.glyphicon-trash
+    
+    div
+        a.btn.btn-default(href='/activities/add') Add

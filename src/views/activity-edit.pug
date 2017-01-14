@@ -1,0 +1,35 @@
+extends layout.pug
+
+block content
+    if errors
+        ul.list-unstyled.alert.alert-danger
+            each error in errors
+                li= error 
+
+    form.form-horizontal(action=model.id ? '/activities/edit/' + model.id :'/activities/add' method='POST')
+        div.form-group
+            label.control-label.col-sm-1(for='date') Date:
+            div.col-sm-3
+                input.form-control(id='date' name='date' type='datetime-local' placeholder='mm/dd/yyyy, hh:mm AM' value=model.date ? moment(model.date).format('YYYY-MM-DDTHH:mm') : moment().format('YYYY-MM-DDT00:00'))
+        div.form-group
+            label.control-label.col-sm-1(for='activity') Activity:
+            div.col-sm-3
+                select.form-control.col-sm-1(id='activity' name='activity')
+                    each activity in activities
+                        option(value=activity.id selected=model.activity === activity.description) #{activity.description}
+        div.form-group
+            label.control-label.col-sm-1(for='duration') Duration:
+            div.col-sm-3
+                input.form-control.col-sm-1(id='duration' name='duration' min='0' type='number' placeholder='minutes' value=model.time_duration || 0)
+            div.col-sm-1  minutes
+        div.form-group
+            label.control-label.col-sm-1(for='distance') Distance:
+            div.col-sm-3
+                input.form-control.col-sm-1(id='distance' name='distance' min='0' max='1000000' type='number' value=model.distance)
+            div.col-sm-1
+                select.form-control.col-sm-1(name='distance_units')
+                    option(value='miles' selected=model.distance_units === 'miles') miles
+                    option(value='meters' selected=model.distance_units === 'meters') meters
+        div.form-group
+            button.btn.btn-default.col-sm-1.col-sm-offset-1(type='submit') Save
+            a.btn.btn-default.col-sm-1(href='/activities/list') Cancel
