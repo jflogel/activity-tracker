@@ -1,13 +1,19 @@
-const mongo = require('mongodb');
+const mongo = require('mongodb'),
+    moment = require('moment');
 const activity = require('./model');
 var db;
 
-function findActivities(activityDescription) {
-    const activityFilter = activityDescription 
-        ? {activity_id: activity.getByDescription(activityDescription).id}
-        : {};
+function findActivities(year, activityDescription) {
+    const dateForYear = moment().year(year),
+        startOfYear = dateForYear.startOf('year').unix(),
+        endOfYear = dateForYear.endOf('year').unix();
+    const filter = {datetime: {$gte: startOfYear, $lte: endOfYear}};
+    if (activityDescription) {
+        filter.activity_id = activity.getByDescription(activityDescription).id;
+    }
+
     return db.collection('activity_tracking')
-        .find(activityFilter, {sort:{datetime:-1}})
+        .find(filter, {sort:{datetime:-1}})
         .toArray();
 }
 
@@ -26,12 +32,18 @@ function deleteActivity(id) {
         .remove({_id: new mongo.ObjectID(id)});
 }
 
+function findMostRecentActivity() {
+    return db.collection('activity_tracking')
+        .findOne({}, {sort: {datetime: -1}});
+}
+
 module.exports = function(dataSource) {
     db = dataSource;
     return {
-        findActivity: findActivity,
-        findActivities: findActivities,
-        saveActivity: saveActivity,
-        deleteActivity: deleteActivity
+        findActivity,
+        findActivities,
+        findMostRecentActivity,
+        saveActivity,
+        deleteActivity
     };
 }

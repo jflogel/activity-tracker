@@ -1,4 +1,5 @@
 const mongo = require('mongodb');
+const moment = require('moment');
 var router = require('express').Router();
 var activity = require('./model')
 var mapper = require('./mapper')
@@ -50,18 +51,24 @@ router.get('/delete/:id', function(req, res) {
 });
 
 router.get(['/', '/list'], function (req, res) {
-    repository.findActivities()
-        .then(function(activities) {
-            res.render('activity-list', { activities: activities.map(mapper.mapToDTO) });
+    repository.findMostRecentActivity()
+        .then((activity) => {
+            repository.findActivities(moment.unix(activity.datetime).year())
+                .then(function(activities) {
+                    res.render('activity-list', { activities: activities.map(mapper.mapToDTO) });
+                });
         });
 });
 
 router.get('/list/:activity', function (req, res) {
     const description = req.params.activity;
-    repository.findActivities(description)
-        .then(function(activities) {
-            res.render('activity-list', { activities: activities.map(mapper.mapToDTO), path: description });
-        });
+    repository.findMostRecentActivity()
+        .then((activity) => {
+            repository.findActivities(moment.unix(activity.datetime).year(), description)
+                .then(function(activities) {
+                    res.render('activity-list', { activities: activities.map(mapper.mapToDTO), path: description });
+                });
+        })
 });
 
 module.exports = function(dataSource) {

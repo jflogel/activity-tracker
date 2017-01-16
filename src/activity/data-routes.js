@@ -1,6 +1,7 @@
 var router = require('express').Router();
 var activity = require('./model')
-var mapper = require('./mapper')
+var mapper = require('./mapper');
+var moment = require('moment');
 var repository;
 var db;
 
@@ -14,18 +15,24 @@ router.get('/dashboard', function (req, res) {
 
 router.route('/')
     .get(function (req, res) {
-        repository.findActivities()
-            .then(function(activities) {
-                res.send(activities.map(mapper.mapToDTO));
+        repository.findMostRecentActivity()
+            .then((activity) => {
+                repository.findActivities(moment.unix(activity.datetime).year())
+                    .then(function(activities) {
+                        res.send(activities.map(mapper.mapToDTO));
+                    });
             });
     });
 
 router.get('/:activity', function (req, res) {
     const description = req.params.activity;
-    repository.findActivities(description)
-        .then(function(activities) {
-            res.send(activities.map(mapper.mapToDTO));
-        });
+    repository.findMostRecentActivity()
+            .then((activity) => {
+                repository.findActivities(moment.unix(activity.datetime).year(), description)
+                    .then(function(activities) {
+                        res.send(activities.map(mapper.mapToDTO));
+                    });
+            });
 });
 
 module.exports = function(dataSource) {

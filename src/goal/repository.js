@@ -1,7 +1,7 @@
 var db;
 
-function findGoals() {
-    return db.collection('goal').find({}).toArray();
+function findGoals(year) {
+    return db.collection('goal').find({year: year}).toArray();
 }
 
 module.exports = function(dataSource) {
