@@ -25,7 +25,7 @@ block content
         div.form-group
             label.control-label.col-sm-1(for='distance') Distance:
             div.col-sm-3
-                input.form-control.col-sm-1(id='distance' name='distance' min='0' max='1000000' type='number' value=model.distance)
+                input.form-control.col-sm-1(id='distance' name='distance' type='text' value=model.distance)
             div.col-sm-1
                 select.form-control.col-sm-1(name='distance_units')
                     option(value='miles' selected=model.distance_units === 'miles') miles

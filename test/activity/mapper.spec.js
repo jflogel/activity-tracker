@@ -11,7 +11,7 @@ describe('mapper', () => {
         date: '2017-01-14T00:00',
         activity: '1',
         duration: '21',
-        distance: '3',
+        distance: '3.5',
         distance_units: 'miles'
       };
     });
@@ -20,7 +20,7 @@ describe('mapper', () => {
 
       model.activity_id.should.equal(1);
       model.time_duration.should.deep.equal({value: 21, unit: 'minutes'});
-      model.distance.should.deep.equal({value: 3, unit: 'miles'});
+      model.distance.should.deep.equal({value: 3.5, unit: 'miles'});
       model.datetime.should.equal(1484373600);
     });
     it('without distance', () => {

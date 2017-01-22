@@ -10,7 +10,7 @@ function mapToModel(webActivity) {
         }
     };
     if (webActivity.distance) {
-        newActivity.distance = {value: parseInt(webActivity.distance), unit: webActivity.distance_units};
+        newActivity.distance = {value: parseFloat(webActivity.distance), unit: webActivity.distance_units};
     }
     return newActivity;
 }
