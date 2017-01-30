@@ -1,19 +1,21 @@
 extends layout.pug
 
 block content
-    ul.nav.nav-tabs
-        li(class=!path ? "active" : '')
-            a(href="/activities/list") All
-        li(class=path === 'running' ? "active" : '')
-            a(href="/activities/list?activity=running") Running
-        li(class=path === 'core' ? "active" : '')
-            a(href="/activities/list?activity=core") Core
-        li(class=path === 'swimming' ? "active" : '')
-            a(href="/activities/list?activity=swimming") Swimming
-        li(class=path === 'weights' ? "active" : '')
-            a(href="/activities/list?activity=weights") Weights
-    div
-        a.btn.btn-default(href='/activities/add') Add
+    nav.navbar
+        ul.nav.navbar-nav.nav-pills
+            li(class=!path ? "active" : '')
+                a(href="/activities/list") All
+            li(class=path === 'running' ? "active" : '')
+                a(href="/activities/list?activity=running") Running
+            li(class=path === 'core' ? "active" : '')
+                a(href="/activities/list?activity=core") Core
+            li(class=path === 'swimming' ? "active" : '')
+                a(href="/activities/list?activity=swimming") Swimming
+            li(class=path === 'weights' ? "active" : '')
+                a(href="/activities/list?activity=weights") Weights
+        ul.nav.navbar-nav.navbar-right
+            li
+                a.btn.btn-default(href='/activities/add') Add
     div(id="columnchart_values" style="height: 400px;")
     ul.list-unstyled.activities
         each item in activities

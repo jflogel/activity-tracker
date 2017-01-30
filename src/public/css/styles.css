@@ -20,3 +20,9 @@ a {
 .btn {
     margin-right: 10px;
 }
+
+/* bootstrap overrides */
+.navbar-nav li a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
