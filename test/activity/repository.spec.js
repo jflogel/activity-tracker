@@ -31,12 +31,13 @@ describe('activity repository', () => {
     });
     
     describe('find activities', () => {
+        const startOfYear = moment().year(2017).startOf('year').unix();
         it('should retrieve by activity by year', () => {
-            return repository.findActivities(2017, 'swimming')
+            return repository.findActivities(startOfYear, 'swimming')
                 .should.eventually.deep.equal([activity4, activity3]);
         });
         it('should retrieve all by year', () => {
-            return repository.findActivities(2017)
+            return repository.findActivities(startOfYear)
                 .should.eventually.deep.equal([activity2, activity4, activity3, activity1]);
         });
     });

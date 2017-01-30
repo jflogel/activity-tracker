@@ -3,11 +3,8 @@ const mongo = require('mongodb'),
 const activity = require('./model');
 var db;
 
-function findActivities(year, activityDescription) {
-    const dateForYear = moment().year(year),
-        startOfYear = dateForYear.startOf('year').unix(),
-        endOfYear = dateForYear.endOf('year').unix();
-    const filter = {datetime: {$gte: startOfYear, $lte: endOfYear}};
+function findActivities(activitiesSinceUnixDate, activityDescription) {
+    const filter = {datetime: {$gte: activitiesSinceUnixDate}};
     if (activityDescription) {
         filter.activity_id = activity.getByDescription(activityDescription).id;
     }

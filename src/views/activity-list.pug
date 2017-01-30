@@ -5,13 +5,16 @@ block content
         li(class=!path ? "active" : '')
             a(href="/activities/list") All
         li(class=path === 'running' ? "active" : '')
-            a(href="/activities/list/running") Running
+            a(href="/activities/list?activity=running") Running
         li(class=path === 'core' ? "active" : '')
-            a(href="/activities/list/core") Core
+            a(href="/activities/list?activity=core") Core
         li(class=path === 'swimming' ? "active" : '')
-            a(href="/activities/list/swimming") Swimming
+            a(href="/activities/list?activity=swimming") Swimming
         li(class=path === 'weights' ? "active" : '')
-            a(href="/activities/list/weights") Weights
+            a(href="/activities/list?activity=weights") Weights
+    div
+        a.btn.btn-default(href='/activities/add') Add
+    div(id="columnchart_values" style="height: 400px;")
     ul.list-unstyled.activities
         each item in activities
             li.row
@@ -24,6 +27,29 @@ block content
                         span.glyphicon.glyphicon-pencil
                     a.delete(href='/activities/delete/' + item.id title='Delete')
                         span.glyphicon.glyphicon-trash
+    script(type="text/javascript" src="https://www.gstatic.com/charts/loader.js")
+    script(src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous")
     
-    div
-        a.btn.btn-default(href='/activities/add') Add
+    script.
+        google.charts.load('current', {packages: ['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var regex = /activity=([a-z]*)/i;
+            var queryParams = window.location.search;
+            var activity = regex.test(queryParams) ? queryParams.match(/activity=([a-z]*)/i)[1] : '';
+            var url = "/data/activities/chart?activity=" + activity;
+            $.getJSON(url)
+                .done(function(json) {
+                    var data = google.visualization.arrayToDataTable(json);
+                    var view = new google.visualization.DataView(data);
+
+                    var options = {
+                        height: 400,
+                        legend: { position: 'top', maxLines: 3 },
+                        bar: { groupWidth: '75%' },
+                        isStacked: true
+                    };
+                    var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+                    chart.draw(view, options);
+                });
+        }

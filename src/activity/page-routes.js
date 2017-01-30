@@ -51,24 +51,14 @@ router.get('/delete/:id', function(req, res) {
 });
 
 router.get(['/', '/list'], function (req, res) {
+    const description = req.query.activity;
     repository.findMostRecentActivity()
         .then((activity) => {
-            repository.findActivities(moment.unix(activity.datetime).year())
-                .then(function(activities) {
-                    res.render('activity-list', { activities: activities.map(mapper.mapToDTO) });
-                });
-        });
-});
-
-router.get('/list/:activity', function (req, res) {
-    const description = req.params.activity;
-    repository.findMostRecentActivity()
-        .then((activity) => {
-            repository.findActivities(moment.unix(activity.datetime).year(), description)
+            repository.findActivities(moment.unix(activity.datetime).startOf('year').unix(), description)
                 .then(function(activities) {
                     res.render('activity-list', { activities: activities.map(mapper.mapToDTO), path: description });
                 });
-        })
+        });
 });
 
 module.exports = function(dataSource) {
