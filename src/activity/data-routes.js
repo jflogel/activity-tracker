@@ -13,11 +13,11 @@ router.get('/dashboard', function (req, res) {
         });
 });
 
-router.route('/')
-    .get(function (req, res) {
+router.route('/').get(function (req, res) {
+        const description = req.query.activity;
         repository.findMostRecentActivity()
             .then((activity) => {
-                repository.findActivities(moment.unix(activity.datetime).startOf('year').unix())
+                repository.findActivities(moment.unix(activity.datetime).startOf('year').unix(), description)
                     .then(function(activities) {
                         res.send(activities.map(mapper.mapToDTO));
                     });
@@ -74,17 +74,6 @@ router.get('/chart', function (req, res) {
             activitiesForLast30Days.forEach((item) => output.push(item));
             res.send(output);
         });
-});
-
-router.get('/:activity', function (req, res) {
-    const description = req.params.activity;
-    repository.findMostRecentActivity()
-            .then((activity) => {
-                repository.findActivities(moment.unix(activity.datetime).startOf('year').unix(), description)
-                    .then(function(activities) {
-                        res.send(activities.map(mapper.mapToDTO));
-                    });
-            });
 });
 
 module.exports = function(dataSource) {
