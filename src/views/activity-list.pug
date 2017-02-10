@@ -17,14 +17,14 @@ block content
             li
                 a.btn.btn-default(href='/activities/add') Add
     div(id="columnchart_values" style="height: 400px;")
-    ul.list-unstyled.activities
+    table.table.table-striped.table-condensed.table-hover.activities
         each item in activities
-            li.row
-                span.col-md-3= moment(item.date).format("dddd, MMMM Do, h:mm a")
-                span.col-md-1= item.activity
-                span.col-md-2 #{item.time_duration} minutes
-                span.col-md-2 #{item.distance} #{item.distance_units}
-                span.col-md-1
+            tr.row
+                td= moment(item.date).format("dddd, M/D, h:mm a")
+                td= item.activity
+                td #{item.time_duration} minutes
+                td #{item.distance} #{item.distance_units}
+                td
                     a.edit(href='/activities/edit/' + item.id title='Edit')
                         span.glyphicon.glyphicon-pencil
                     a.delete(href='/activities/delete/' + item.id title='Delete')
