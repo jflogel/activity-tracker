@@ -50,13 +50,77 @@ router.get('/delete/:id', function(req, res) {
     });
 });
 
+function getWeeklyStats(requestedActivity) {
+    const thisWeeksActivities = repository.findActivities(moment().startOf('week').unix(), requestedActivity.description);
+    return thisWeeksActivities.then(activities => {
+        const goalType = requestedActivity.goalType;
+        if (goalType === 'distance') {
+            const totalDistance = activities.reduce((accum, curr) => {
+                return accum + curr.distance.value;
+            }, 0);
+            return `${totalDistance} ${activities[0].distance.unit}`;
+        } else if (goalType === 'duration') {
+            const totalDuration = activities.reduce((accum, curr) => {
+                return accum + curr.time_duration.value;
+            }, 0);
+            return `${totalDuration} ${activities[0].time_duration.unit}`;
+        } else {
+            return `${activities.length} sessions`;
+        }
+    });
+}
+
+function getYearlyStats(activities, requestedActivity) {
+    const weeksThisYear = moment().dayOfYear() / 7;
+    const goalType = requestedActivity.goalType;
+    if (goalType === 'distance') {
+        const totalDistance = activities.reduce((accum, curr) => {
+            return accum + curr.distance.value;
+        }, 0);
+        const unit = activities[0].distance.unit;
+        return {
+            average: `${totalDistance / weeksThisYear} ${unit}`,
+            total: `${totalDistance} ${unit}`
+        };
+    } else if (goalType === 'duration') {
+        const totalDuration = activities.reduce((accum, curr) => {
+            return accum + curr.time_duration.value;
+        }, 0);
+        const durationUnit = activities[0].time_duration.unit;
+        return {
+            average: `${totalDuration / weeksThisYear} ${durationUnit}`,
+            total: `${totalDuration} ${durationUnit}`
+        };
+    }
+    const count = activities.length;
+    return {
+        average: `${count / weeksThisYear} sessions`,
+        total: `${count} sessions`
+    };
+}
+
 router.get(['/', '/list'], function (req, res) {
-    const description = req.query.activity;
+    const requestedActivity = activity.getByDescription(req.query.activity);
     repository.findMostRecentActivity()
         .then((activity) => {
-            repository.findActivities(moment.unix(activity.datetime).startOf('year').unix(), description)
-                .then(function(activities) {
-                    res.render('activity-list', { activities: activities.map(mapper.mapToDTO), path: description });
+            const activities = repository.findActivities(moment.unix(activity.datetime).startOf('year').unix(), requestedActivity.description),
+                weeklyStats = getWeeklyStats(requestedActivity);
+            
+            Promise.all([activities, weeklyStats]).then(values => {
+                    var activityStats;
+                    if (requestedActivity.description !== 'Unknown') {
+                        const yearlyStats = getYearlyStats(values[0], requestedActivity);
+                        activityStats = {
+                            totalForWeek: values[1],
+                            average: yearlyStats.average,
+                            totalForYear: yearlyStats.total
+                        }
+                    }
+                    res.render('activity-list', { 
+                        activities: values[0].map(mapper.mapToDTO), 
+                        path: requestedActivity.description,
+                        activityStats
+                    });
                 });
         });
 });
